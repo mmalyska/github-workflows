@@ -20,7 +20,7 @@ jobs:
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
   build-release:
-    needs: [ check-releases ]
+    needs: [ check-release ]
     if: needs.check-release.outputs.newTalosReleaseFound
     uses: mmalyska/github-workflows/.github/workflows/talos-build-image.yaml@main
     with:
