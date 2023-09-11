@@ -1,0 +1,40 @@
+---
+name: Check Talos release
+
+on:
+  workflow_call:
+    inputs:
+      repositoryName:
+        description: "Target repository name"
+        default: ${{ github.repository.full_name }}
+        required: false
+        type: string
+
+jobs:
+  check-release:
+    name: Check talos release version
+    runs-on: ubuntu-latest
+    outputs:
+      newTalosReleaseFound: ${{ steps.compare-releases.outputs.new_release_found }}
+      talosReleaseTag: ${{ steps.talos-release.outputs.talos_release_tag }}
+      talosReleaseBody: ${{ steps.talos-release.outputs.talos_release_body }}
+    steps:
+      - name: Fetch latest Talos release information
+        id: talos-release
+        run: |
+          talos_release_json=$(curl -sL https://api.github.com/repos/siderolabs/talos/releases/latest)
+          echo "talos_release_tag=$(echo "$talos_release_json" | jq -r ".tag_name")" >> $GITHUB_OUTPUT
+          {
+            echo 'talos_release_body<<EOF'
+            echo "$talos_release_json" | jq -r ".body"
+            echo EOF
+          } >> $GITHUB_OUTPUT
+      - name: Fetch latest repository release version
+        id: repository-release
+        run: |
+          repository_release_tag=$(curl -sL https://api.github.com/repos/${{ github.event.inputs.repositoryName }}/releases/latest | jq -r ".tag_name")
+          echo "repository_release_tag=$repository_release_tag" >> $GITHUB_OUTPUT
+      - name: Compare releases
+        id: compare-releases
+        if: steps.talos-release.outputs.talos_release_tag != steps.repository-release.outputs.repository_release_tag
+        run: echo "new_release_found=true" >> $GITHUB_OUTPUT
