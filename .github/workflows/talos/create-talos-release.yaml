@@ -1,0 +1,34 @@
+---
+name: Create new Talos assets release
+
+on:
+  workflow_call:
+    inputs:
+      repositoryName:
+        description: "Target repository name"
+        default: ${{ github.repository.full_name }}
+        required: false
+        type: string
+      talosExtensionsImage:
+        description: "Talos extensions"
+        required: true
+        type: string
+
+jobs:
+  check-release:
+    uses: mmalyska/github-workflows/.github/workflows/talos/check-new-talos-image.yaml@main
+    with:
+      repositoryName: ${{ github.repository.full_name }}
+    secrets:
+      app_id: ${{ secrets.BOT_APP_ID }}
+      app_private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+  build-release:
+    needs: [ check-releases ]
+    if: needs.check-release.outputs.newTalosReleaseFound
+    uses: mmalyska/github-workflows/.github/workflows/talos/build-talos-image.yaml@main
+    with:
+      talosVersion: ${{ needs.check-release.outputs.talosReleaseTag }}
+      talosExtensionsImage: ${{ github.event.inputs.talosExtensionsImage }}
+    secrets:
+      app_id: ${{ secrets.BOT_APP_ID }}
+      app_private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
