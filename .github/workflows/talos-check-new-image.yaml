@@ -10,7 +10,7 @@ on:
         required: false
         type: string
     outputs:
-      newTalosReleaseFound: "${{ jobs.check-release.outputs.newTalosReleaseFound }}"
+      newTalosReleaseFound: ${{ jobs.check-release.outputs.newTalosReleaseFound }}
       talosReleaseTag: ${{ jobs.check-release.outputs.talosReleaseTag }}
       talosReleaseBody: ${{ jobs.check-release.outputs.talosReleaseBody }}
 
