@@ -19,9 +19,6 @@ jobs:
     uses: mmalyska/github-workflows/.github/workflows/talos/check-new-talos-image.yaml@main
     with:
       repositoryName: ${{ github.event.inputs.repositoryName }}
-    secrets:
-      app_id: ${{ secrets.BOT_APP_ID }}
-      app_private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
   build-release:
     needs: [ check-releases ]
     if: needs.check-release.outputs.newTalosReleaseFound
@@ -29,6 +26,3 @@ jobs:
     with:
       talosVersion: ${{ needs.check-release.outputs.talosReleaseTag }}
       talosExtensionsImage: ${{ github.event.inputs.talosExtensionsImage }}
-    secrets:
-      app_id: ${{ secrets.BOT_APP_ID }}
-      app_private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
