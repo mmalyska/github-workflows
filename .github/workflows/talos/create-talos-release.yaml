@@ -18,7 +18,7 @@ jobs:
   check-release:
     uses: mmalyska/github-workflows/.github/workflows/talos/check-new-talos-image.yaml@main
     with:
-      repositoryName: ${{ github.repository.full_name }}
+      repositoryName: ${{ github.event.inputs.repositoryName }}
     secrets:
       app_id: ${{ secrets.BOT_APP_ID }}
       app_private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
