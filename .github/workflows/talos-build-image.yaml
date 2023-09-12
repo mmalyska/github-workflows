@@ -20,7 +20,7 @@ jobs:
     permissions:
       contents: write
     container:
-      image: ghcr.io/siderolabs/imager:${{ github.event.inputs.talosVersion }}
+      image: ghcr.io/siderolabs/imager:${{ inputs.talosVersion }}
       options: --privileged
       volumes:
         - /dev:/dev
@@ -32,14 +32,14 @@ jobs:
         run: |
           /bin/imager installer \
             --arch ${{ matrix.arch }} \
-            ${{ github.event.inputs.talosExtensionsImage }}
+            ${{ inputs.talosExtensionsImage }}
 
       - name: Build ${{ matrix.arch }} metal
         run: |
           /bin/imager metal \
             --arch ${{ matrix.arch }} \
             --extra-kernel-arg net.ifnames=0
-            ${{ github.event.inputs.talosExtensionsImage }}
+            ${{ inputs.talosExtensionsImage }}
 
       - name: Upload ${{ matrix.arch }} installer artifact
         uses: actions/upload-artifact@v3

@@ -18,11 +18,11 @@ jobs:
   check-release:
     uses: mmalyska/github-workflows/.github/workflows/talos-check-new-image.yaml@main
     with:
-      repositoryName: ${{ github.event.inputs.repositoryName }}
+      repositoryName: ${{ inputs.repositoryName }}
   build-release:
     needs: [ check-release ]
     if: needs.check-release.outputs.newTalosReleaseFound
     uses: mmalyska/github-workflows/.github/workflows/talos-build-image.yaml@main
     with:
       talosVersion: ${{ needs.check-release.outputs.talosReleaseTag }}
-      talosExtensionsImage: ${{ github.event.inputs.talosExtensionsImage }}
+      talosExtensionsImage: ${{ inputs.talosExtensionsImage }}
