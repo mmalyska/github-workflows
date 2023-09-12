@@ -38,7 +38,7 @@ jobs:
         run: |
           /bin/imager metal \
             --arch ${{ matrix.arch }} \
-            --extra-kernel-arg net.ifnames=0
+            --extra-kernel-arg net.ifnames=0 \
             ${{ inputs.talosExtensionsImage }}
 
       - name: Upload ${{ matrix.arch }} installer artifact
