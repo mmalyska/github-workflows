@@ -12,6 +12,10 @@ on:
         description: "Talos extensions"
         required: true
         type: string
+      arch:
+        description: "Build architecture"
+        required: true
+        type: string
 
 jobs:
   build-talos-assets:
@@ -24,35 +28,41 @@ jobs:
       options: --privileged
       volumes:
         - /dev:/dev
-    strategy:
-      matrix:
-        arch: [amd64, arm64]
     steps:
-      - name: Build ${{ matrix.arch }} installer
+      - name: Build ${{ inputs.arch }} installer
         run: |
           /bin/imager installer \
-            --arch ${{ matrix.arch }} \
+            --arch ${{ inputs.arch }} \
             ${{ inputs.talosExtensionsImage }}
 
-      - name: Build ${{ matrix.arch }} metal
+      - name: Build ${{ inputs.arch }} metal
         run: |
           /bin/imager metal \
-            --arch ${{ matrix.arch }} \
+            --arch ${{ inputs.arch }} \
             --extra-kernel-arg net.ifnames=0 \
             ${{ inputs.talosExtensionsImage }}
 
-      - name: Upload ${{ matrix.arch }} installer artifact
+      - name: Build ${{ inputs.arch }} iso
+        run: |
+          /bin/imager metal \
+            --arch ${{ inputs.arch }} \
+            --extra-kernel-arg net.ifnames=0 \
+            ${{ inputs.talosExtensionsImage }}
+
+      - name: Upload ${{ inputs.arch }} installer artifact
         uses: actions/upload-artifact@v3
         with:
-          name: installer-${{ matrix.arch }}
-          path: /out/metal-${{ matrix.arch }}-installer.tar
+          name: installer-${{ inputs.arch }}
+          path: /out/metal-${{ inputs.arch }}-installer.tar
           if-no-files-found: error
           retention-days: 1
 
-      - name: Upload ${{ matrix.arch }} metal artifact
+      - name: Upload ${{ inputs.arch }} metal artifact
         uses: actions/upload-artifact@v3
         with:
-          name: talos-${{ matrix.arch }}
-          path: /out/metal-${{ matrix.arch }}.raw.xz
+          name: talos-${{ inputs.arch }}
+          path: |
+            /out/metal-${{ inputs.arch }}.raw.xz
+            /out/metal-${{ inputs.arch }}.iso
           if-no-files-found: error
           retention-days: 1

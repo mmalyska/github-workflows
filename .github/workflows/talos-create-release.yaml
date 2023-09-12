@@ -13,6 +13,11 @@ on:
         description: "Talos extensions"
         required: true
         type: string
+      archList:
+        description: "List of architectures to build"
+        default: "[ 'amd64', 'arm64' ]"
+        required: true
+        type: string
 
 jobs:
   check-release:
@@ -20,9 +25,35 @@ jobs:
     with:
       repositoryName: ${{ inputs.repositoryName }}
   build-release:
+    strategy:
+      matrix:
+        arch: ${{ fromJSON(inputs.archList) }}
     needs: [ check-release ]
     if: needs.check-release.outputs.newTalosReleaseFound
     uses: mmalyska/github-workflows/.github/workflows/talos-build-image.yaml@main
     with:
       talosVersion: ${{ needs.check-release.outputs.talosReleaseTag }}
       talosExtensionsImage: ${{ inputs.talosExtensionsImage }}
+      arch: ${{ matrix.arch }}
+  create-release:
+    strategy:
+      matrix:
+        arch: ${{ fromJSON(inputs.archList) }}
+    needs: [ build-release, check-release ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download build asset images
+        uses: actions/download-artifact@v3
+        with:
+          name: talos-${{ matrix.arch }}
+          path: /tmp/talos-assets
+
+      - name: Create a new release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.check-release.outputs.talosReleaseTag }}
+          body: ${{ needs.check-release.outputs.talosReleaseBody }}
+          files: |
+            /tmp/talos-assets/*
