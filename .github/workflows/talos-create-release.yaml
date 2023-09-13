@@ -89,3 +89,8 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Load ad push image
+        run: |
+          docker load --input /tmp/talos-assets/metal-${{ inputs.arch }}-installer.tar
+          docker image ls
