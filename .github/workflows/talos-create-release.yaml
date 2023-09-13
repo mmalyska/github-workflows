@@ -18,6 +18,14 @@ on:
         default: "[ 'amd64', 'arm64' ]"
         required: false
         type: string
+      pushToRegistry:
+        default: true
+        type: boolean
+        required: false
+      createRelease:
+        default: true
+        type: boolean
+        required: false
 
 jobs:
   check-release:
@@ -36,6 +44,7 @@ jobs:
       talosExtensionsImage: ${{ inputs.talosExtensionsImage }}
       arch: ${{ matrix.arch }}
   create-release:
+    if: ${{ inputs.createRelease }}
     strategy:
       matrix:
         arch: ${{ fromJSON(inputs.archList) }}
@@ -58,6 +67,7 @@ jobs:
           files: |
             /tmp/talos-assets/*
   push-images:
+    if: ${{ inputs.pushToRegistry }}
     strategy:
       matrix:
         arch: ${{ fromJSON(inputs.archList) }}
