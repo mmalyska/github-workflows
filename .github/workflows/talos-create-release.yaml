@@ -92,5 +92,5 @@ jobs:
       
       - name: Load ad push image
         run: |
-          docker load --input /tmp/talos-assets/metal-${{ inputs.arch }}-installer.tar
+          docker load --input /tmp/talos-assets/metal-${{ matrix.arch }}-installer.tar
           docker image ls
