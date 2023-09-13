@@ -16,7 +16,7 @@ on:
       archList:
         description: "List of architectures to build"
         default: "[ 'amd64', 'arm64' ]"
-        required: true
+        required: false
         type: string
 
 jobs:
@@ -57,3 +57,25 @@ jobs:
           body: ${{ needs.check-release.outputs.talosReleaseBody }}
           files: |
             /tmp/talos-assets/*
+  push-images:
+    strategy:
+      matrix:
+        arch: ${{ fromJSON(inputs.archList) }}
+    needs: [ build-release, check-release ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download build asset images
+        uses: actions/download-artifact@v3
+        with:
+          name: installer-${{ matrix.arch }}
+          path: /tmp/talos-assets
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
