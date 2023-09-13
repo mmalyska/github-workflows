@@ -44,7 +44,7 @@ jobs:
 
       - name: Build ${{ inputs.arch }} iso
         run: |
-          /bin/imager metal \
+          /bin/imager iso \
             --arch ${{ inputs.arch }} \
             --extra-kernel-arg net.ifnames=0 \
             ${{ inputs.talosExtensionsImage }}
