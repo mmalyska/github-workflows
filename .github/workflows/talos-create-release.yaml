@@ -41,7 +41,6 @@ on:
       containerRegistryPassword:
         description: "Container registry password"
         required: true
-        type: string
 
 jobs:
   check-release:
