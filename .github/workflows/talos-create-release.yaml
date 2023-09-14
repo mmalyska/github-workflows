@@ -86,7 +86,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Load ad push image
+      - name: Import and push image
         run: |
           ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY
@@ -95,6 +95,13 @@ jobs:
             docker push ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
             AMENDPARAMS="${AMENDPARAMS}--amend ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH"
           done
-          docker manifest create ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }} $(echo $AMENDPARAMS)
+          docker manifest create ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }} $AMENDPARAMS
           docker manifest push --purge ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}
-
+      
+      - name: Clean up unused images
+        run: |
+          ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
+          for ARCH in $ARRAY
+          do
+            docker push ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+          done
