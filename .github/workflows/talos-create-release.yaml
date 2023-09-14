@@ -8,8 +8,20 @@ on:
         description: "Repository name"
         required: true
         type: string
-      crName:
-        description: "Container registry for image"
+      containerRegistryName:
+        description: "Container registry name"
+        required: true
+        type: string
+      containerRegistryUsername:
+        description: "Container registry username"
+        required: true
+        type: string
+      containerRegistryPassword:
+        description: "Container registry password"
+        required: true
+        type: string
+      containerRepositoryName:
+        description: "Container repository for image"
         required: true
         type: string
       talosExtensionsImage:
@@ -82,26 +94,26 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v3.0.0
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ inputs.containerRegistryName }}
+          username: ${{ inputs.containerRegistryUsername }}
+          password: ${{ inputs.containerRegistryPassword }}
       
       - name: Import and push image
         run: |
           ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY
           do
-            docker import --platform $ARCH /tmp/talos-assets/metal-$ARCH-installer.tar ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
-            docker push ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
-            AMENDPARAMS="${AMENDPARAMS}--amend ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH"
+            docker import --platform $ARCH /tmp/talos-assets/metal-$ARCH-installer.tar ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker push ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            AMENDPARAMS="${AMENDPARAMS} --amend ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH"
           done
-          docker manifest create ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }} $AMENDPARAMS
-          docker manifest push --purge ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}
+          docker manifest create ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }} $AMENDPARAMS
+          docker manifest push --purge ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}
       
       - name: Clean up unused images
         run: |
           ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY
           do
-            docker rmi ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker rmi ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
           done
