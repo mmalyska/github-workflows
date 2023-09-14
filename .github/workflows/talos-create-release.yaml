@@ -52,7 +52,7 @@ jobs:
       matrix:
         arch: ${{ fromJSON(inputs.archList) }}
     needs: [ check-release ]
-    if: needs.check-release.outputs.newTalosReleaseFound
+    if: ${{ needs.check-release.outputs.newTalosReleaseFound == 'true' }}
     uses: mmalyska/github-workflows/.github/workflows/talos-build-image.yaml@main
     with:
       talosVersion: ${{ needs.check-release.outputs.talosReleaseTag }}

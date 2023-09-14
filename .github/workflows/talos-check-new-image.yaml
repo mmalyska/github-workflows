@@ -21,7 +21,7 @@ jobs:
     name: Check talos release version
     runs-on: ubuntu-latest
     outputs:
-      newTalosReleaseFound: "${{ steps.talos-release.outputs.talos_release_tag != steps.repository-release.outputs.repository_release_tag }}"
+      newTalosReleaseFound: ${{ steps.talos-release.outputs.talos_release_tag != steps.repository-release.outputs.repository_release_tag }}
       talosReleaseTag: ${{ steps.talos-release.outputs.talos_release_tag }}
       talosReleaseBody: ${{ steps.talos-release.outputs.talos_release_body }}
     steps:
