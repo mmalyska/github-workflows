@@ -45,9 +45,6 @@ jobs:
       arch: ${{ matrix.arch }}
   create-release:
     if: ${{ inputs.createRelease }}
-    strategy:
-      matrix:
-        arch: ${{ fromJSON(inputs.archList) }}
     needs: [ build-release, check-release ]
     runs-on: ubuntu-latest
     permissions:
@@ -56,7 +53,7 @@ jobs:
       - name: Download build asset images
         uses: actions/download-artifact@v3
         with:
-          name: talos-${{ matrix.arch }}
+          name: talos-images
           path: /tmp/talos-assets
 
       - name: Create a new release
@@ -68,9 +65,6 @@ jobs:
             /tmp/talos-assets/*
   push-images:
     if: ${{ inputs.pushToRegistry }}
-    strategy:
-      matrix:
-        arch: ${{ fromJSON(inputs.archList) }}
     needs: [ build-release, check-release ]
     runs-on: ubuntu-latest
     permissions:
@@ -80,7 +74,7 @@ jobs:
       - name: Download build asset images
         uses: actions/download-artifact@v3
         with:
-          name: installer-${{ matrix.arch }}
+          name: talos-installer
           path: /tmp/talos-assets
 
       - name: Log in to the Container registry
@@ -92,5 +86,6 @@ jobs:
       
       - name: Load ad push image
         run: |
-          docker load --input /tmp/talos-assets/metal-${{ matrix.arch }}-installer.tar
+          ARRAY=$(echo "${{ inputs.archList }}" | jq -r '.[]')
+          for ARCH in $ARRAY; do docker load --input /tmp/talos-assets/metal-$ARCH-installer.tar; done
           docker image ls

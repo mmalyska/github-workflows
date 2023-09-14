@@ -52,7 +52,7 @@ jobs:
       - name: Upload ${{ inputs.arch }} installer artifact
         uses: actions/upload-artifact@v3
         with:
-          name: installer-${{ inputs.arch }}
+          name: talos-installer
           path: /out/metal-${{ inputs.arch }}-installer.tar
           if-no-files-found: error
           retention-days: 1
@@ -60,7 +60,7 @@ jobs:
       - name: Upload ${{ inputs.arch }} metal artifact
         uses: actions/upload-artifact@v3
         with:
-          name: talos-${{ inputs.arch }}
+          name: talos-images
           path: |
             /out/metal-${{ inputs.arch }}.raw.xz
             /out/metal-${{ inputs.arch }}.iso
