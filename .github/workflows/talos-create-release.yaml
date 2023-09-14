@@ -15,7 +15,7 @@ on:
         type: string
       archList:
         description: "List of architectures to build"
-        default: "[ 'amd64', 'arm64' ]"
+        default: '[ "amd64", "arm64" ]'
         required: false
         type: string
       pushToRegistry:
