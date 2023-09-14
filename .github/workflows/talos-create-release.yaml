@@ -86,6 +86,6 @@ jobs:
       
       - name: Load ad push image
         run: |
-          ARRAY=$(echo "${{ inputs.archList }}" | jq -r '.[]')
+          ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY; do docker load --input /tmp/talos-assets/metal-$ARCH-installer.tar; done
           docker image ls
