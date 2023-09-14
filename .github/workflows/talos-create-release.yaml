@@ -16,10 +16,6 @@ on:
         description: "Container registry username"
         required: true
         type: string
-      containerRegistryPassword:
-        description: "Container registry password"
-        required: true
-        type: string
       containerRepositoryName:
         description: "Container repository for image"
         required: true
@@ -41,6 +37,11 @@ on:
         default: true
         type: boolean
         required: false
+    secrets:
+      containerRegistryPassword:
+        description: "Container registry password"
+        required: true
+        type: string
 
 jobs:
   check-release:
@@ -96,7 +97,7 @@ jobs:
         with:
           registry: ${{ inputs.containerRegistryName }}
           username: ${{ inputs.containerRegistryUsername }}
-          password: ${{ inputs.containerRegistryPassword }}
+          password: ${{ secrets.containerRegistryPassword }}
       
       - name: Import and push image
         run: |
