@@ -6,8 +6,7 @@ on:
     inputs:
       repositoryName:
         description: "Target repository name"
-        default: ${{ github.repository.full_name }}
-        required: false
+        required: true
         type: string
     outputs:
       newTalosReleaseFound:
