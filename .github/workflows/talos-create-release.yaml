@@ -103,5 +103,5 @@ jobs:
           ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY
           do
-            docker push ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker rmi ${{ inputs.crName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
           done
