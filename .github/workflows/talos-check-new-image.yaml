@@ -35,8 +35,10 @@ jobs:
             echo "$talos_release_json" | jq -r ".body"
             echo EOF
           } >> $GITHUB_OUTPUT
+          echo $(echo "$talos_release_json" | jq -r ".tag_name")
       - name: Fetch latest repository release version
         id: repository-release
         run: |
           repository_release_tag=$(curl -sL https://api.github.com/repos/${{ inputs.repositoryName }}/releases/latest | jq -r ".tag_name")
           echo "repository_release_tag=$repository_release_tag" >> $GITHUB_OUTPUT
+          echo $repository_release_tag
