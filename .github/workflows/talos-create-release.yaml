@@ -69,14 +69,14 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: talos-images
-          path: /tmp/talos-assets
+          path: /tmp/talos-images
       - name: Create a new release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.check-release.outputs.talosReleaseTag }}
           body: ${{ needs.check-release.outputs.talosReleaseBody }}
           files: |
-            /tmp/talos-assets/*
+            /tmp/talos-images/*
   push-images:
     if: ${{ inputs.pushToRegistry }}
     needs: [ build-release, check-release ]
@@ -89,7 +89,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: talos-installer
-          path: /tmp/talos-assets
+          path: /tmp/talos-installer
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3.0.0
@@ -103,7 +103,9 @@ jobs:
           ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY
           do
-            docker import --platform $ARCH /tmp/talos-assets/metal-$ARCH-installer.tar ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker load --input /tmp/talos-installer/metal-$ARCH-installer.tar ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker tag ghcr.io/siderolabs/installer:${{ needs.check-release.outputs.talosReleaseTag }} ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker rmi ghcr.io/siderolabs/installer:${{ needs.check-release.outputs.talosReleaseTag }}
             docker push ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
             AMENDPARAMS="${AMENDPARAMS} --amend ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH"
           done
