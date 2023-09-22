@@ -112,7 +112,7 @@ jobs:
           docker manifest create ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }} $AMENDPARAMS
           for ARCH in $ARRAY
           do
-            docker manifest annotate ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }} ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH --arch $ARCH
+            docker manifest annotate ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }} ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH --arch $ARCH --os linux
           done
           docker manifest push --purge ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}
       
