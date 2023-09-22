@@ -103,7 +103,7 @@ jobs:
           ARRAY=$(echo '${{ inputs.archList }}' | jq -r '.[]')
           for ARCH in $ARRAY
           do
-            docker load --input /tmp/talos-installer/metal-$ARCH-installer.tar ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker load --input /tmp/talos-installer/metal-$ARCH-installer.tar
             docker tag ghcr.io/siderolabs/installer:${{ needs.check-release.outputs.talosReleaseTag }} ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
             docker rmi ghcr.io/siderolabs/installer:${{ needs.check-release.outputs.talosReleaseTag }}
             docker push ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
