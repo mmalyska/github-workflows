@@ -107,6 +107,8 @@ jobs:
             docker tag ghcr.io/siderolabs/installer:${{ needs.check-release.outputs.talosReleaseTag }} ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
             docker rmi ghcr.io/siderolabs/installer:${{ needs.check-release.outputs.talosReleaseTag }}
             docker push ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
+            docker manifest annotate ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH --arch $ARCH
+            docker manifest push ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH
             AMENDPARAMS="${AMENDPARAMS} --amend ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }}-$ARCH"
           done
           docker manifest create ${{ inputs.containerRegistryName }}/${{ inputs.containerRepositoryName }}:${{ needs.check-release.outputs.talosReleaseTag }} $AMENDPARAMS
