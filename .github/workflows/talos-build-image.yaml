@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: talos-installer
-          path: /out/metal-${{ inputs.arch }}-installer.tar
+          path: /out/installer-${{ inputs.arch }}.tar
           if-no-files-found: error
           retention-days: 1
 
