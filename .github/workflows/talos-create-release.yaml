@@ -41,6 +41,11 @@ on:
         default: false
         type: boolean
         required: false
+      extraKernelArg:
+        description: "Extra kernel args"
+        required: false
+        type: string
+        default:
     secrets:
       containerRegistryPassword:
         description: "Container registry password"
@@ -62,6 +67,7 @@ jobs:
       talosVersion: ${{ needs.check-release.outputs.talosReleaseTag }}
       talosExtensionsImage: ${{ inputs.talosExtensionsImage }}
       arch: ${{ matrix.arch }}
+      extraKernelArg: ${{ inputs.extraKernelArg }}
   create-release:
     if: ${{ inputs.createRelease }}
     needs: [ build-release, check-release ]
