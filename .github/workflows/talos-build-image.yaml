@@ -16,6 +16,11 @@ on:
         description: "Build architecture"
         required: true
         type: string
+      extra-kernel-arg:
+        description: "Extra kernel args"
+        required: false
+        type: string
+        default:
 
 jobs:
   build-talos-assets:
@@ -33,20 +38,21 @@ jobs:
         run: |
           /bin/imager installer \
             --arch ${{ inputs.arch }} \
+            --extra-kernel-arg net.ifnames=0 ${{ inputs.extra-kernel-arg }} \
             ${{ inputs.talosExtensionsImage }}
 
       - name: Build ${{ inputs.arch }} metal
         run: |
           /bin/imager metal \
             --arch ${{ inputs.arch }} \
-            --extra-kernel-arg net.ifnames=0 \
+            --extra-kernel-arg net.ifnames=0 ${{ inputs.extra-kernel-arg }} \
             ${{ inputs.talosExtensionsImage }}
 
       - name: Build ${{ inputs.arch }} iso
         run: |
           /bin/imager iso \
             --arch ${{ inputs.arch }} \
-            --extra-kernel-arg net.ifnames=0 \
+            --extra-kernel-arg net.ifnames=0 ${{ inputs.extra-kernel-arg }} \
             ${{ inputs.talosExtensionsImage }}
 
       - name: Upload ${{ inputs.arch }} installer artifact
