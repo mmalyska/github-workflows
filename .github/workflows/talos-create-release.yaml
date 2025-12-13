@@ -70,7 +70,7 @@ jobs:
       contents: write
     steps:
       - name: Download build asset images
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: talos-images-*
           path: /tmp/talos-images
@@ -91,7 +91,7 @@ jobs:
       packages: write
     steps:
       - name: Download build asset images
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           pattern: talos-installer-*
           path: /tmp/talos-installer
