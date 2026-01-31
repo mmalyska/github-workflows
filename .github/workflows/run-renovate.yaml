@@ -45,7 +45,7 @@ jobs:
           token: "${{ steps.generate-token.outputs.token }}"
 
       - name: Renovate
-        uses: renovatebot/github-action@ea850436a5fe75c0925d583c7a02c60a5865461d # v43.0.20
+        uses: renovatebot/github-action@957af03d760b2c87fc65cb95628f6d5f95d9c578 # v46.0.0
         env:
           DRY_RUN: ${{ inputs.dryRun }}
           LOG_LEVEL: ${{ inputs.renovateLogLevel }}
