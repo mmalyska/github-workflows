@@ -52,7 +52,7 @@ jobs:
             ${{ inputs.talosExtensionsImage }}
 
       - name: Upload ${{ inputs.arch }} installer artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: talos-installer-${{ inputs.arch }}
           path: /out/installer-${{ inputs.arch }}.tar
@@ -60,7 +60,7 @@ jobs:
           retention-days: 1
 
       - name: Upload ${{ inputs.arch }} metal artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: talos-images-${{ inputs.arch }}
           path: |
