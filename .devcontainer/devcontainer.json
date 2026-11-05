@@ -3,7 +3,12 @@
 {
 	"name": "Docker in Docker",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:bullseye@sha256:6c9ed5e39f498694fcd2eb2ac4a28eeea16ab0e5f6c44393d692e6cbb2eef08b",
+	// The shared dev-workstation image (built in mmalyska/containers) provides the tools, Go included.
+	"image": "ghcr.io/mmalyska/dev-workstation:1.0.0@sha256:71335a56b4a6dd99f9105da136395963f24fd40f4832a0ce4d54e46b725e6fb5",
+	// The image runs as vscode and has no sudo, but the docker-in-docker entrypoint must start dockerd as root.
+	// The container starts as root; VS Code, terminals and lifecycle commands still run as vscode.
+	"containerUser": "root",
+	"remoteUser": "vscode",
 
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:4": {
@@ -11,8 +16,6 @@
 			"enableNonRootDocker": "true",
 			"moby": "true"
 		},
-		"ghcr.io/devcontainers/features/go:1": {},
-		"ghcr.io/meaningful-ooo/devcontainer-features/homebrew:2": {},
 		"ghcr.io/dhoeric/features/act:1": {}
 	}
 
