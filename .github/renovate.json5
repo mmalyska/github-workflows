@@ -1,8 +1,5 @@
 {
-  extends: [
-    "github>mmalyska/renovate-config",
-    "github>mmalyska/renovate-config:automerge-github-actions",
-  ],
+  extends: ["github>mmalyska/renovate-config"],
   platform: "github",
   username: "bendo-bot[bot]",
   gitAuthor: "bendo-bot <126472327+bendo-bot[bot]@users.noreply.github.com>",
