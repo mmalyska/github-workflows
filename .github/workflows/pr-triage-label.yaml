@@ -1,0 +1,59 @@
+---
+# Reusable workflow: when bendo-bot[bot] pushes to its own PR, reset the triage
+# labels (drop triage/clean and triage/owner, add triage/needed). PRs by any
+# other author are left untouched.
+#
+# A reusable workflow cannot exceed the permissions the caller grants, so the
+# caller must grant pull-requests: write:
+#
+#   name: PR triage label
+#   on:
+#     pull_request:
+#       types: [synchronize]
+#   permissions:
+#     contents: read
+#   jobs:
+#     triage:
+#       uses: mmalyska/github-workflows/.github/workflows/pr-triage-label.yaml@main
+#       permissions:
+#         pull-requests: write
+name: PR Triage Label
+
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  triage-label:
+    name: Triage label
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'bendo-bot[bot]'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Reset triage labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+
+          # Add first so the PR is never left without a triage label.
+          gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/labels" \
+            -f 'labels[]=triage/needed' >/dev/null
+
+          base="repos/${REPO}/issues/${PR_NUMBER}/labels"
+          for label in 'triage%2Fclean' 'triage%2Fowner'; do
+            # A label that is not on the PR gives 404, which is fine.
+            # Any other error fails the job.
+            if ! err="$(gh api -X DELETE "${base}/${label}" 2>&1 >/dev/null)"; then
+              if [[ "${err}" == *"HTTP 404"* ]]; then
+                echo "Label ${label} not on PR, skipping"
+              else
+                echo "${err}" >&2
+                exit 1
+              fi
+            fi
+          done
