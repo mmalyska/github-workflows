@@ -4,7 +4,7 @@
 	"name": "Docker in Docker",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	// The shared dev-workstation image (built in mmalyska/containers) provides the tools, Go included.
-	"image": "ghcr.io/mmalyska/dev-workstation:1.0.0@sha256:3cbc2aa85c825d33fe330bcd05db35d115d9aff4df9b29bee0a7ff3d1cef33ea",
+	"image": "ghcr.io/mmalyska/dev-workstation:1.0.0@sha256:0493a2f2b3da7f7a3bea67d210b59f9447575c07e50e4d8621abc87f3d0cb332",
 	// The image runs as vscode and has no sudo, but the docker-in-docker entrypoint must start dockerd as root.
 	// The container starts as root; VS Code, terminals and lifecycle commands still run as vscode.
 	"containerUser": "root",
