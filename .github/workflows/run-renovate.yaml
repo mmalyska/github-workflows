@@ -20,9 +20,12 @@ on:
         required: false
         type: string
     secrets:
+      client_id:
+        description: "Client ID of the application used to generate a token"
+        required: false
       app_id:
-        description: "App ID of the application used to generate a token"
-        required: true
+        description: "Deprecated, use client_id. App ID of the application used to generate a token"
+        required: false
       app_private_key:
         description: "Private key of the application used to generate a token"
         required: true
@@ -36,7 +39,8 @@ jobs:
         uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
         id: generate-token
         with:
-          app-id: ${{ secrets.app_id }}
+          client-id: ${{ secrets.client_id }}
+          app-id: ${{ secrets.client_id == '' && secrets.app_id || '' }}
           private-key: ${{ secrets.app_private_key }}
 
       - name: Checkout
