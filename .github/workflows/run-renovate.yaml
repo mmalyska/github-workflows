@@ -22,10 +22,7 @@ on:
     secrets:
       client_id:
         description: "Client ID of the application used to generate a token"
-        required: false
-      app_id:
-        description: "Deprecated, use client_id. App ID of the application used to generate a token"
-        required: false
+        required: true
       app_private_key:
         description: "Private key of the application used to generate a token"
         required: true
@@ -40,7 +37,6 @@ jobs:
         id: generate-token
         with:
           client-id: ${{ secrets.client_id }}
-          app-id: ${{ secrets.client_id == '' && secrets.app_id || '' }}
           private-key: ${{ secrets.app_private_key }}
 
       - name: Checkout
