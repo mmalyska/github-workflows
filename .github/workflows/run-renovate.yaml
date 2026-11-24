@@ -19,6 +19,11 @@ on:
         default: ".github/renovate.json5"
         required: false
         type: string
+      repoCache:
+        description: "Renovate repository cache: enabled, disabled or reset"
+        default: "enabled"
+        required: false
+        type: string
     secrets:
       client_id:
         description: "Client ID of the application used to generate a token"
@@ -26,6 +31,12 @@ on:
       app_private_key:
         description: "Private key of the application used to generate a token"
         required: true
+
+env:
+  # The directory Renovate provides for the repository cache. A custom cacheDir can cause permission problems.
+  cache_dir: /tmp/renovate/cache/renovate/repository
+  # Change to bust the cache.
+  cache_key: renovate-cache
 
 jobs:
   renovate:
@@ -44,6 +55,21 @@ jobs:
         with:
           token: "${{ steps.generate-token.outputs.token }}"
 
+      - name: Restore Renovate cache
+        id: cache-restore
+        if: inputs.repoCache == 'enabled'
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.cache_dir }}
+          key: ${{ env.cache_key }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            ${{ env.cache_key }}-
+
+      - name: Fix restored cache ownership
+        if: steps.cache-restore.outputs.cache-matched-key != ''
+        # Renovate reads the cache inside its container as user 12021.
+        run: sudo chown -R 12021:0 /tmp/renovate/
+
       - name: Renovate
         uses: renovatebot/github-action@acdd6bda8b035c99ce59d5675816af2aa65a1774 # v46.3.14
         env:
@@ -51,6 +77,14 @@ jobs:
           LOG_LEVEL: ${{ inputs.renovateLogLevel }}
           RENOVATE_AUTODISCOVER: true
           RENOVATE_AUTODISCOVER_FILTER: "${{ github.repository }}"
+          RENOVATE_REPOSITORY_CACHE: ${{ inputs.repoCache }}
         with:
           configurationFile: ${{ inputs.configurationFile }}
           token: "${{ steps.generate-token.outputs.token }}"
+
+      - name: Save Renovate cache
+        if: inputs.repoCache != 'disabled' && steps.cache-restore.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.cache_dir }}
+          key: ${{ env.cache_key }}-${{ github.run_id }}-${{ github.run_attempt }}
